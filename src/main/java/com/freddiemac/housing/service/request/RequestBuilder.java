@@ -2,10 +2,12 @@ package com.freddiemac.housing.service.request;
 
 import com.freddiemac.housing.config.DataApiProperties;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Map;
 
+@Component
 public class RequestBuilder {
 
     DataApiProperties dataApiProperties;

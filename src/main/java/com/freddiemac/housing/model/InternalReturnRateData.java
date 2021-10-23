@@ -18,7 +18,7 @@ public class InternalReturnRateData extends TargetSuggestionData {
     @Override
     public void setData()
     {
-        //Todo: calculate internal rate of return from data returned
+
     }
 
 }

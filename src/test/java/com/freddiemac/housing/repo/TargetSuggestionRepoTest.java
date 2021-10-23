@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import reactor.test.StepVerifier;
@@ -21,6 +22,8 @@ public class TargetSuggestionRepoTest {
 
     @Autowired
     TargetSuggestionRepo targetSuggestionRepo;
+    @Autowired
+    ApplicationContext ctx;
 
     @Test
     public void runner()
@@ -32,6 +35,12 @@ public class TargetSuggestionRepoTest {
                 })
                 .thenCancel()
                 .verify();
+    }
+
+    @Test
+    public void test()
+    {
+        InternalReturnRateData bean = ctx.getBean(InternalReturnRateData.class);
     }
 
     private InternalReturnRateData getInternalReturnRateData()

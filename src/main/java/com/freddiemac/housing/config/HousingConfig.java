@@ -28,6 +28,7 @@ public class HousingConfig implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
+    @Bean
     public List<CovariateSuggestionDataService<? extends CovariateSuggestionData, CovariateSuggestionRepo>> covariateDataServices(
             CovariateSuggestionRepo covariateSuggestonRepo
     )
@@ -38,6 +39,7 @@ public class HousingConfig implements ApplicationContextAware {
         );
     }
 
+    @Bean
     public List<TargetSuggestionDataService<? extends TargetSuggestionData, TargetSuggestionRepo>> targetSuggestionDataServices(
             TargetSuggestionRepo targetSuggestionRepo
     )
@@ -54,8 +56,6 @@ public class HousingConfig implements ApplicationContextAware {
     {
         return applicationContext.getBean(dataApiService,targetSuggestionRepo,suggestionDataClzz);
     }
-
-
 
     @Override
     @Autowired

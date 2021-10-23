@@ -5,6 +5,7 @@ import com.freddiemac.housing.suggestion.Suggestion;
 import com.freddiemac.housing.suggestion.SuggestionAggregator;
 import com.freddiemac.housing.suggestion.SuggestionFactory;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@NoArgsConstructor
 public class SuggestionService {
 
     SuggestionAggregator suggestionAggregator;

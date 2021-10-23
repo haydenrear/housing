@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@AllArgsConstructor
 @NoArgsConstructor
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
 
@@ -25,12 +24,7 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
         this.suggestionDataClzz = suggestionDataClzz;
     }
 
-    @Autowired
-    public void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder)
-    {
-        this.builder = builder;
-        this.requestBuilder = requestBuilder;
-    }
+    public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 
     public T[][] getData(SuggestionMetadata suggestionMetadata)
     {

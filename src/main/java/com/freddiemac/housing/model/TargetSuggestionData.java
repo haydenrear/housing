@@ -19,7 +19,7 @@ public class TargetSuggestionData extends SuggestionData {
     @Override
     public void setData()
     {
-        //Todo:
+
     }
 
 }
