@@ -1,0 +1,7 @@
+suggestion:
+  urlData:
+    sample.com:
+      queryParam1: possibleQueryParam
+  requestAttributes:
+    something: hello
+
