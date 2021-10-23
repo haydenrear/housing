@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class SuggestionMetadata {
 
     DataApiProperties dataApiProperties;
-
     List<String> metadata;
 
     public Map<String, Map<String,Map<String, String>>> getProperties()
