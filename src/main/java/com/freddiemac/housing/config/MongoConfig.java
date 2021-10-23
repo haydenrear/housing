@@ -21,7 +21,7 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration{
     @Override
     public MongoClient reactiveMongoClient(){
         ConnectionString connString = new ConnectionString(
-                "mongodb+srv://haydenhousing:thisisapasswordnobodyknows@alpaca.olrez.mongodb.net/alpaca?retryWrites=true&w=majority"
+                "mongodb+srv://username:password@alpaca.olrez.mongodb.net/alpaca?retryWrites=true&w=majority"
         );
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connString)
