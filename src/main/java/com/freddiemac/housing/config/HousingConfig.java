@@ -46,7 +46,6 @@ public class HousingConfig implements ApplicationContextAware {
     {
         return List.of(
                 createDataService(InternalReturnRateData.class, targetSuggestionRepo,TargetSuggestionDataService.class)
-                //Todo: instantiate targetSuggestionDataService with more types of SuggestionData extending TargetSuggestionData
         );
     }
 
