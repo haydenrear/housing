@@ -1,17 +1,21 @@
 package com.freddiemac.housing.service.request;
 
 
+import org.springframework.http.HttpMethod;
+
 import java.net.URI;
 import java.util.Objects;
 
 public final class UriAndRequest {
     private final URI url;
     private final SuggestionRequest suggestionRequest;
+    private final HttpMethod method;
 
-    UriAndRequest(URI url, SuggestionRequest suggestionRequest)
+    UriAndRequest(URI url, SuggestionRequest suggestionRequest, HttpMethod method)
     {
         this.url = url;
         this.suggestionRequest = suggestionRequest;
+        this.method = method;
     }
 
     public URI url()

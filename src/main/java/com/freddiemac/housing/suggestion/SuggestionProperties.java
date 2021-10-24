@@ -14,4 +14,5 @@ public class SuggestionProperties {
     Map<String, String> queryReplacements;
     Map<String, String> uriReplacements;
     Map<String, String> requestAttributes;
+    String httpMethod;
 }

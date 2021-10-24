@@ -5,6 +5,7 @@ import com.freddiemac.housing.model.PopulationDensity;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
 import com.freddiemac.housing.suggestion.SuggestionProperties;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
@@ -26,20 +27,21 @@ public class RequestBuilder {
                 .map(apiProp -> getUri(apiProp)
                         .map(uri -> {
                             Class<? extends SuggestionRequest> suggestionRequest = dataApiProperties.getSuggestionRequests().get(apiProp.getSuggestionType());
-                            SuggestionRequest suggestionRequestCreated = getSuggestionRequest(suggestionRequest, apiProp.getRequestAttributes());
-                            return new UriAndRequest(uri, suggestionRequestCreated);
+                            Optional<? extends SuggestionRequest> suggestionRequestCreated = getSuggestionRequest(suggestionRequest, apiProp.getRequestAttributes());
+                            return new UriAndRequest(uri, suggestionRequestCreated.orElse(null), HttpMethod.valueOf(apiProp.getHttpMethod()));
                         })
                         .orElseThrow()
                 );
     }
 
-
-    private <T extends SuggestionRequest> T getSuggestionRequest(Class<T> suggestionRequest,
+    private <T extends SuggestionRequest> Optional<T> getSuggestionRequest(Class<T> suggestionRequest,
                                                                  Map<String, String> requestAttributes)
     {
+        if(suggestionRequest == null)
+            return Optional.empty();
         T request = SuggestionRequestFactory.CreateSuggestionRequest(suggestionRequest);
         request.addRequestAttributes(requestAttributes);
-        return request;
+        return Optional.of(request);
     }
 
     private Optional<URI> getUri(SuggestionProperties suggestionMetadata)

@@ -34,21 +34,28 @@ public class SuggestionMetadata {
                     var queryParams = map.get("urlQueryParams");
                     var pathParams = map.get("urlPathParams");
                     var requestAttributes = map.get("requestAttributes");
-                    return replaceVals(mapEntry, queryParams, pathParams, requestAttributes);
+                    return replaceVals(mapEntry, queryParams, pathParams, requestAttributes, httpMethod(mapEntry));
                 });
+    }
+
+    private String httpMethod(Map.Entry<String, Map<String, Map<String, String>>> mapEntry)
+    {
+        return mapEntry.getValue().get("httpAttributes").get("httpMethod");
     }
 
     private SuggestionProperties replaceVals(
             Map.Entry<String, Map<String, Map<String, String>>> map,
             Map<String, String> queryParams,
             Map<String, String> pathParams,
-            Map<String, String> requestAttributes)
+            Map<String, String> requestAttributes,
+            String httpMethod
+    )
     {
 
         var request = replaceAttributes(map.getValue().get("requestAttributes"),requestAttributes);
         var urlPath = replaceAttributes(map.getValue().get("urlPathParams"),pathParams);
         var urlQuery = replaceAttributes(map.getValue().get("urlQueryParams"),queryParams);
-        return new SuggestionProperties(map.getKey(),urlQuery,urlPath,request);
+        return new SuggestionProperties(map.getKey(),urlQuery,urlPath,request,httpMethod);
     }
 
     private Map<String,String> replaceAttributes(
@@ -56,9 +63,11 @@ public class SuggestionMetadata {
             Map<String, String> requestAttributeReplacements
     )
     {
-        return value.keySet().stream()
-                .map(s -> Map.entry(s, requestAttributeReplacements.get(s)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if(value != null)
+            return value.keySet().stream()
+                    .map(s -> Map.entry(s, requestAttributeReplacements.get(s)))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return Map.of();
     }
 
 }
