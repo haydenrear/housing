@@ -3,6 +3,7 @@ package com.freddiemac.housing.service.request;
 import com.freddiemac.housing.config.DataApiProperties;
 import com.freddiemac.housing.model.PopulationDensity;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
+import com.freddiemac.housing.suggestion.SuggestionProperties;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,30 +20,32 @@ public class RequestBuilder {
 
     DataApiProperties dataApiProperties;
 
-
     public Flux<UriAndRequest> createSuggestionRequest(SuggestionMetadata suggestionMetadata)
     {
-        return Flux.fromIterable(suggestionMetadata.getProperties().entrySet())
+        return suggestionMetadata.getProperties()
                 .map(apiProp -> getUri(apiProp)
                         .map(uri -> {
-                            String suggestionRequestClassName = apiProp.getValue().get("SuggestionRequest").get("Class");
-                            Class<? extends SuggestionRequest> suggestionRequest = dataApiProperties.getSuggestionRequests().get(suggestionRequestClassName);
-                            return new UriAndRequest(uri, getSuggestionRequest(suggestionRequest).addRequestAttributes(dataApiProperties.getRequestAttributes().get(apiProp.getKey())));
+                            Class<? extends SuggestionRequest> suggestionRequest = dataApiProperties.getSuggestionRequests().get(apiProp.getSuggestionType());
+                            SuggestionRequest suggestionRequestCreated = getSuggestionRequest(suggestionRequest, apiProp.getRequestAttributes());
+                            return new UriAndRequest(uri, suggestionRequestCreated);
                         })
                         .orElseThrow()
                 );
     }
 
 
-    private <T extends SuggestionRequest> T getSuggestionRequest(Class<T> suggestionRequest)
+    private <T extends SuggestionRequest> T getSuggestionRequest(Class<T> suggestionRequest,
+                                                                 Map<String, String> requestAttributes)
     {
-        return SuggestionRequestFactory.CreateSuggestionRequest(suggestionRequest);
+        T request = SuggestionRequestFactory.CreateSuggestionRequest(suggestionRequest);
+        request.addRequestAttributes(requestAttributes);
+        return request;
     }
 
-    private Optional<URI> getUri(Map.Entry<String, Map<String, Map<String, String>>> suggestionMetadata)
+    private Optional<URI> getUri(SuggestionProperties suggestionMetadata)
     {
         try {
-            return Optional.of(swapUrlParams(suggestionMetadata.getValue().get("queryParams"), suggestionMetadata.getValue().get("pathParams"), new URI(suggestionMetadata.getKey())));
+            return Optional.of(swapUrlParams(suggestionMetadata.getQueryReplacements(), suggestionMetadata.getUriReplacements(), new URI(suggestionMetadata.getSuggestionType())));
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -55,10 +58,4 @@ public class RequestBuilder {
         queryParams.forEach(uriComponentsBuilder::queryParam);
         return uriComponentsBuilder.build(pathParams);
     }
-
-    private SuggestionRequest addRequestAttributes(SuggestionMetadata suggestionMetadata, Map<String,String> requestAttributes)
-    {
-        return null;
-    }
-
 }

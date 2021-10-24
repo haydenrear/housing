@@ -1,7 +1,17 @@
 suggestion:
-  urlData:
-    sample.com:
-      queryParam1: possibleQueryParam
-  requestAttributes:
-    something: hello
+  suggestionData:
+    population_density.com:
+      urlQueryParams:
+        numReturn: numReturn
+        SuggestionRequest:
+      urlPathParams:
+        numReturn: numReturn
+        SuggestionRequest:
+      requestAttributes:
+        location: location
+        date: date
+  suggestionRequests:
+    population_density.com: com.freddiemac.housing.request.PopulationDensityRequest
+
+
 

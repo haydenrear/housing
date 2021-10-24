@@ -15,8 +15,10 @@ import java.util.Map;
 @Data
 public class DataApiProperties {
 
-    private Map<String, Map<String,Map<String,String>>> urlData;
-    private Map<String, Map<String,String>> requestAttributes;
+    private Map<String,Map<String,Map<String,Map<String,String>>>> suggestionData;
+
+//    private Map<String, Map<String,Map<String,String>>> urlData;
+//    private Map<String, Map<String,String>> requestAttributes;
     private Map<String, Class<? extends SuggestionRequest>> suggestionRequests;
 
 }
