@@ -1,6 +1,6 @@
 package com.freddiemac.housing.suggestion;
 
-import com.freddiemac.housing.config.DataApiProperties;
+import com.freddiemac.housing.config.props.DataApiProperties;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Scope;
@@ -28,23 +28,23 @@ public class SuggestionMetadata {
     public Flux<SuggestionProperties> getProperties()
     {
         return Flux.fromIterable(metadata)
-                .flatMap(uri -> Flux.fromIterable(dataApiProperties.getSuggestionData().get(uri).entrySet()))
-                .map(mapEntry -> {
-                    var map = mapEntry.getValue();
+                .map(uri -> {
+                    var map = dataApiProperties.getSuggestionData().get(uri);
                     var queryParams = map.get("urlQueryParams");
                     var pathParams = map.get("urlPathParams");
                     var requestAttributes = map.get("requestAttributes");
-                    return replaceVals(mapEntry, queryParams, pathParams, requestAttributes, httpMethod(mapEntry));
+                    return replaceVals(uri, queryParams, pathParams, requestAttributes, httpMethod(map.get("httpAttributes")));
                 });
+
     }
 
-    private String httpMethod(Map.Entry<String, Map<String, Map<String, String>>> mapEntry)
+    private String httpMethod(Map<String, String> mapEntry)
     {
-        return mapEntry.getValue().get("httpAttributes").get("httpMethod");
+        return mapEntry.get("httpMethod");
     }
 
     private SuggestionProperties replaceVals(
-            Map.Entry<String, Map<String, Map<String, String>>> map,
+            String uri,
             Map<String, String> queryParams,
             Map<String, String> pathParams,
             Map<String, String> requestAttributes,
@@ -52,10 +52,10 @@ public class SuggestionMetadata {
     )
     {
 
-        var request = replaceAttributes(map.getValue().get("requestAttributes"),requestAttributes);
-        var urlPath = replaceAttributes(map.getValue().get("urlPathParams"),pathParams);
-        var urlQuery = replaceAttributes(map.getValue().get("urlQueryParams"),queryParams);
-        return new SuggestionProperties(map.getKey(),urlQuery,urlPath,request,httpMethod);
+        var request = replaceAttributes(requestAttributes,requestAttributes);
+        var urlPath = replaceAttributes(pathParams,pathParams);
+        var urlQuery = replaceAttributes(queryParams,queryParams);
+        return new SuggestionProperties(uri,urlQuery,urlPath,request,httpMethod);
     }
 
     private Map<String,String> replaceAttributes(

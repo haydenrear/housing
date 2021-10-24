@@ -1,4 +1,4 @@
-package com.freddiemac.housing.config;
+package com.freddiemac.housing.config.props;
 
 import com.freddiemac.housing.service.request.SuggestionRequest;
 import com.freddiemac.housing.util.YamlPropertyFactory;
@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -15,10 +16,8 @@ import java.util.Map;
 @Data
 public class DataApiProperties {
 
-    private Map<String,Map<String,Map<String,Map<String,String>>>> suggestionData;
-
-//    private Map<String, Map<String,Map<String,String>>> urlData;
-//    private Map<String, Map<String,String>> requestAttributes;
+    private Map<String,Map<String,Map<String,String>>> suggestionData;
     private Map<String, Class<? extends SuggestionRequest>> suggestionRequests;
+    private List<Class<?>> lst;
 
 }

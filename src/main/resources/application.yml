@@ -1,6 +1,6 @@
 suggestion:
   suggestionData:
-    population_density.com:
+    population_density_com:
       urlQueryParams:
         numReturn: numReturn
       requestAttributes:
@@ -8,7 +8,7 @@ suggestion:
         date: date
       httpAttributes:
         httpMethod: POST
-    dollarsinvestment.com/{city}/{state}:
+    dollarsinvestment_com/{city}/{state}:
       urlQueryParams:
         propertyType: numReturn
       urlPathParams:
@@ -17,8 +17,7 @@ suggestion:
       httpAttributes:
         httpMethod: GET
   suggestionRequests:
-    population_density.com: com.freddiemac.housing.request.PopulationDensityRequest
-    dollarsinvestment.com:
+    population_density_com: com.freddiemac.housing.service.request.PopulationDensityRequest
 
 
 

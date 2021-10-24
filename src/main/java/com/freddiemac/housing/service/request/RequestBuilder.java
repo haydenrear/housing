@@ -1,10 +1,8 @@
 package com.freddiemac.housing.service.request;
 
-import com.freddiemac.housing.config.DataApiProperties;
-import com.freddiemac.housing.model.PopulationDensity;
+import com.freddiemac.housing.config.props.DataApiProperties;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
 import com.freddiemac.housing.suggestion.SuggestionProperties;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -14,7 +12,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Component
 public class RequestBuilder {
