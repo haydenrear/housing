@@ -5,10 +5,12 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.request.RequestBuilder;
 import com.freddiemac.housing.service.request.UriAndRequest;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.GroupedFlux;
+
+import java.util.function.Function;
 
 @NoArgsConstructor
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
@@ -26,14 +28,20 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 
-    public T[][] getData(SuggestionMetadata suggestionMetadata)
+    public <K> Flux<GroupedFlux<K, Flux<T>>> getData(SuggestionMetadata suggestionMetadata, Function<Flux<T>, K> keyMapper)
     {
-        return null;
+        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
+                .map(this::getData)
+                .groupBy(keyMapper);
     }
 
-    protected T[] getData(UriAndRequest uriAndRequest)
+    protected Flux<T> getData(UriAndRequest uriAndRequest)
     {
-        return null;
+        return builder.baseUrl(uriAndRequest.url().toString())
+                .build()
+                .method(uriAndRequest.getMethod())
+                .retrieve()
+                .bodyToFlux(this.suggestionDataClzz);
     }
 
 }

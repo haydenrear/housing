@@ -28,6 +28,11 @@ public final class UriAndRequest {
         return suggestionRequest;
     }
 
+    public HttpMethod getMethod()
+    {
+        return method;
+    }
+
     @Override
     public boolean equals(Object obj)
     {
