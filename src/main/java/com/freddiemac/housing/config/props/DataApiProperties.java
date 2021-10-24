@@ -18,5 +18,6 @@ public class DataApiProperties {
 
     private Map<String,Map<String,Map<String,String>>> suggestionData;
     private Map<String, Class<? extends SuggestionRequest>> suggestionRequests;
+    private List<Class<?>> lst;
 
 }
