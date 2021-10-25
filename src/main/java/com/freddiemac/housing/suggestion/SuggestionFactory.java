@@ -43,8 +43,8 @@ public class SuggestionFactory {
 
         Map<SuggestionData.DateLocation, CovariateTarget> covariateTargetMap = new HashMap<>();
 
-        var covariatesGrouped = covariatesFlux.map(covariateFlux -> covariateFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
-        var targetsGrouped = targetsFlux.map(targetFlux -> targetFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
+        var covariatesGrouped = covariatesFlux.flatMap(covariateFlux -> covariateFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
+        var targetsGrouped = targetsFlux.flatMap(targetFlux -> targetFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
         var covariates = extracted(covariateTargetMap, covariatesGrouped);
         var targets = extracted(covariateTargetMap, targetsGrouped);
         var total = Flux.concat(covariates,targets);
@@ -56,9 +56,9 @@ public class SuggestionFactory {
 
     private <T extends SuggestionData> Mono<Map<SuggestionData.DateLocation, CovariateTarget>> extracted(
             Map<SuggestionData.DateLocation, CovariateTarget> covariateTargetMap,
-            Flux<Mono<Map<SuggestionData.DateLocation, List<T>>>> covariatesGrouped)
+            Flux<Map<SuggestionData.DateLocation, List<T>>> covariatesGrouped)
     {
-        return covariatesGrouped.flatMap(covariateMapMono -> covariateMapMono.map(covariateMap -> {
+        return covariatesGrouped.map(covariateMap -> {
             covariateMap.forEach((key1, value) -> covariateTargetMap.compute(key1, (key, prev) -> {
                 if(prev == null)
                     prev = new CovariateTarget(new ArrayList<>(), new ArrayList<>(), key);
@@ -68,7 +68,7 @@ public class SuggestionFactory {
                 return prev;
             }));
             return covariateMap;
-        })).then(Mono.just(covariateTargetMap));
+        }).then(Mono.just(covariateTargetMap));
     }
 
     private Flux<Suggestion> createSuggestions(Map<SuggestionData.DateLocation, CovariateTarget> data)
