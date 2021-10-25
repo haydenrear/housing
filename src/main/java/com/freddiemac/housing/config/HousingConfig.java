@@ -7,20 +7,13 @@ import com.freddiemac.housing.repo.TargetSuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.DataApiService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
-
-import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 
-import java.sql.Date;
-import java.time.Instant;
 import java.util.List;
 
 @Configuration
@@ -45,7 +38,7 @@ public class HousingConfig implements ApplicationContextAware {
     )
     {
         return List.of(
-                createDataService(InternalReturnRateData.class, targetSuggestionRepo,TargetSuggestionDataService.class)
+                createDataService(InternalReturnRateData.class, targetSuggestionRepo, TargetSuggestionDataService.class)
         );
     }
 
