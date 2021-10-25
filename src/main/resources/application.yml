@@ -18,3 +18,5 @@ suggestion:
         httpMethod: GET
   suggestionRequests:
     population_density_com: com.freddiemac.housing.service.request.PopulationDensityRequest
+
+mongo.connection.string:  mongodb+srv://housing:housingpassword@alpaca.olrez.mongodb.net/alpaca?retryWrites=true&w=majority
