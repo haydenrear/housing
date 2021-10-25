@@ -5,19 +5,14 @@ import com.freddiemac.housing.model.SuggestionData;
 import com.freddiemac.housing.model.TargetSuggestionData;
 import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
-import com.freddiemac.housing.service.DataApiService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -40,20 +35,46 @@ public class SuggestionFactory {
     {
         var covariatesFlux = Flux.fromIterable(covariateSuggestionDataServices).map(covariateSuggestionDataService -> covariateSuggestionDataService.getData(suggestionMetadata));
         var targetsFlux = Flux.fromIterable(targetSuggestionDataServices).map(targetSuggestionDataService -> targetSuggestionDataService.getData(suggestionMetadata));
-        createSuggestion(covariatesFlux, targetsFlux);
-        //Todo:
-        return null;
+        return createSuggestion(covariatesFlux, targetsFlux);
     }
 
-    private <T extends CovariateSuggestionData, U extends TargetSuggestionData> void createSuggestion(Flux<Flux<T>> covariatesFlux, Flux<Flux<U>> targetsFlux)
+    private <T extends CovariateSuggestionData, U extends TargetSuggestionData> Flux<Suggestion> createSuggestion(Flux<Flux<T>> covariatesFlux, Flux<Flux<U>> targetsFlux)
     {
 
+        Map<SuggestionData.DateLocation, CovariateTarget> covariateTargetMap = new HashMap<>();
 
         var covariatesGrouped = covariatesFlux.map(covariateFlux -> covariateFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
         var targetsGrouped = targetsFlux.map(targetFlux -> targetFlux.collect(Collectors.groupingBy(SuggestionData::dateLocation)));
+        var covariates = extracted(covariateTargetMap, covariatesGrouped);
+        var targets = extracted(covariateTargetMap, targetsGrouped);
+        var total = Flux.concat(covariates,targets);
+
+        return total.takeLast(1)
+                .flatMap(this::createSuggestions);
+
+    }
+
+    private <T extends SuggestionData> Mono<Map<SuggestionData.DateLocation, CovariateTarget>> extracted(
+            Map<SuggestionData.DateLocation, CovariateTarget> covariateTargetMap,
+            Flux<Mono<Map<SuggestionData.DateLocation, List<T>>>> covariatesGrouped)
+    {
+        return covariatesGrouped.flatMap(covariateMapMono -> covariateMapMono.map(covariateMap -> {
+            covariateMap.forEach((key1, value) -> covariateTargetMap.compute(key1, (key, prev) -> {
+                if(prev == null)
+                    prev = new CovariateTarget(new ArrayList<>(), new ArrayList<>(), key);
+                if (prev.covariates == null)
+                    prev.covariates = new ArrayList<>();
+                prev.covariates.add(value);
+                return prev;
+            }));
+            return covariateMap;
+        })).then(Mono.just(covariateTargetMap));
+    }
+
+    private Flux<Suggestion> createSuggestions(Map<SuggestionData.DateLocation, CovariateTarget> data)
+    {
         //Todo:
-
-
+        return Flux.empty();
     }
 
 
@@ -65,10 +86,5 @@ public class SuggestionFactory {
         SuggestionData.DateLocation dateLocation;
     }
 
-    protected <T extends SuggestionData> Mono<Suggestion> createSuggestion(Flux<SuggestionFactory.CovariateTarget> suggestionData, String suggestionType)
-    {
-            //Todo:;
-        return null;
-    }
 
 }
