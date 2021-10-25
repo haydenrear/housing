@@ -16,7 +16,8 @@ public class SuggestionFactory {
 
     public SuggestionFactory(
             List<TargetSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> targetSuggestionDataServices,
-            List<CovariateSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> covariateSuggestionDataServices)
+            List<CovariateSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> covariateSuggestionDataServices
+    )
     {
         this.targetSuggestionDataServices = targetSuggestionDataServices;
         this.covariateSuggestionDataServices = covariateSuggestionDataServices;

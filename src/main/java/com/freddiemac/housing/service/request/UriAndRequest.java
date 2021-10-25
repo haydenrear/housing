@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.Objects;
 
 public final class UriAndRequest {
+
     private final URI url;
     private final SuggestionRequest suggestionRequest;
     private final HttpMethod method;
