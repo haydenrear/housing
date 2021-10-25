@@ -1,5 +1,6 @@
 package com.freddiemac.housing.suggestion;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.freddiemac.housing.config.props.DataApiProperties;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class SuggestionMetadata {
 
+    @JsonIgnore
     DataApiProperties dataApiProperties;
 
     List<String> metadata;
@@ -35,7 +37,6 @@ public class SuggestionMetadata {
                     var requestAttributes = map.get("requestAttributes");
                     return replaceVals(uri, queryParams, pathParams, requestAttributes, httpMethod(map.get("httpAttributes")));
                 });
-
     }
 
     private String httpMethod(Map<String, String> mapEntry)

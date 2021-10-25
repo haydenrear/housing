@@ -25,4 +25,7 @@ public class TargetSuggestionDataService<T extends TargetSuggestionData, U exten
         this.builder = builder;
         this.requestBuilder = requestBuilder;
     }
+
+
+
 }

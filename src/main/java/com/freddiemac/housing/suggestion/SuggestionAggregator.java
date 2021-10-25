@@ -8,7 +8,7 @@ import java.util.List;
 public class SuggestionAggregator {
 
     public List<Suggestion> suggestions(List<Suggestion> suggestions){
-        //Todo:
+        //Todo return first 10:
         return null;
     }
 

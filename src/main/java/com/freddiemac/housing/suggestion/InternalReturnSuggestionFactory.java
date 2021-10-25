@@ -20,6 +20,7 @@ public class InternalReturnSuggestionFactory extends SuggestionFactory {
 
     private Suggestion createSuggestion(InternalReturnRateData[] data)
     {
+        //Todo: return max 10
         return null;
     }
 }

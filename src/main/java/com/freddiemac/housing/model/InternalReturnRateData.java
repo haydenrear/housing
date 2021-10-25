@@ -15,10 +15,11 @@ import org.springframework.stereotype.Component;
 @Data
 public class InternalReturnRateData extends TargetSuggestionData {
 
+
     @Override
     public void setData()
     {
-
+        //Todo: calculate return
     }
 
 }

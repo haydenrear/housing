@@ -2,20 +2,23 @@ suggestion:
   suggestionData:
     population_density_com:
       urlQueryParams:
-        numReturn: numReturn
+        numReturn: number
       requestAttributes:
-        location: location
-        date: date
+        location: dropdown
+        date: start date 1 year getting the data from this date until present
       httpAttributes:
         httpMethod: POST
     dollarsinvestment_com/{city}/{state}:
       urlQueryParams:
-        propertyType: numReturn
+        propertyType: dropdown
       urlPathParams:
         city: city
         state: state
       httpAttributes:
         httpMethod: GET
+    buildings_created_com/{residential_or_commercial}:
+      urlPathParams:
+        residential_or_commercial: residential_or_commercial
   suggestionRequests:
     population_density_com: com.freddiemac.housing.service.request.PopulationDensityRequest
 

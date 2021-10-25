@@ -5,6 +5,7 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.request.RequestBuilder;
 import com.freddiemac.housing.service.request.UriAndRequest;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -13,6 +14,7 @@ import reactor.core.publisher.GroupedFlux;
 import java.util.function.Function;
 
 @NoArgsConstructor
+@Data
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
 
     WebClient.Builder builder;
@@ -28,12 +30,15 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 
-    public <K> Flux<GroupedFlux<K, Flux<T>>> getData(SuggestionMetadata suggestionMetadata, Function<Flux<T>, K> keyMapper)
+    public Flux<T> getData(SuggestionMetadata suggestionMetadata)
     {
         return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
-                .map(this::getData)
-                .groupBy(keyMapper);
+                .flatMap(this::getData);
     }
+
+    //Todo: save data in repos, and also get data from repos in addition to the other services
+
+
 
     protected Flux<T> getData(UriAndRequest uriAndRequest)
     {

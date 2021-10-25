@@ -30,7 +30,7 @@ public class SuggestionService {
     {
         return aggregateSuggestions(
                 Flux.fromIterable(suggestionFactories)
-                    .map(suggestionFactory -> suggestionFactory.createSuggestion(suggestionMetadata))
+                    .flatMap(suggestionFactory -> suggestionFactory.createSuggestion(suggestionMetadata))
         );
     }
 
