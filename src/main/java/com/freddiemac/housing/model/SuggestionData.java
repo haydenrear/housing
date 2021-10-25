@@ -29,8 +29,6 @@ public abstract class SuggestionData implements Comparable<SuggestionData> {
     @JsonIgnore
     protected DateLocation dateLocation;
 
-
-
     @PostConstruct
     public abstract void setData();
 
@@ -38,7 +36,6 @@ public abstract class SuggestionData implements Comparable<SuggestionData> {
     {
         return this.dateLocation;
     }
-
 
     public void setLocationIdentifier(LocationType locationType)
     {
@@ -50,8 +47,6 @@ public abstract class SuggestionData implements Comparable<SuggestionData> {
         //Todo:
         return "20465";
     }
-
-
 
     @Data
     @AllArgsConstructor
