@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 @EqualsAndHashCode(callSuper = true)
 @Scope("prototype")
 @Component
-@AllArgsConstructor
 @Data
 @NoArgsConstructor
 public class InternalReturnRateData extends TargetSuggestionData {
@@ -22,6 +21,7 @@ public class InternalReturnRateData extends TargetSuggestionData {
 
     public InternalReturnRateData(double currentPrice)
     {
+        super("");
         this.currentPrice = currentPrice;
     }
 

@@ -69,7 +69,8 @@ public class InternalReturnSuggestionFactory extends SuggestionFactory<Covariate
 
                         prevCovar = avgCovar;
                         prevTarget = avgTarget;
-                        SuggestionData.DateLocation key = new SuggestionData.DateLocation(date.getKey(), covar.getKey());
+                        SuggestionData.DateLocation key = new SuggestionData.DateLocation(date.getKey(),
+                                                                                          covar.getKey());
 
                         double finalPrevCovar = prevCovar;
                         double finalPrevTarget = prevTarget;

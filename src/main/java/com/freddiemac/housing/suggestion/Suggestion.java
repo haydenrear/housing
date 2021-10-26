@@ -17,6 +17,7 @@ public class Suggestion {
 
     public <T extends SuggestionData> Suggestion(T t, String suggestionType)
     {
+
         //Todo:
     }
 }

@@ -5,6 +5,7 @@ import com.freddiemac.housing.suggestion.Suggestion;
 import com.freddiemac.housing.suggestion.SuggestionFactory;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +13,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-@RestController(value = "v1")
+@Controller(value = "v1")
 public class HousingController {
 
     SuggestionService suggestionService;
@@ -22,10 +23,18 @@ public class HousingController {
         this.suggestionService = suggestionService;
     }
 
-    @PostMapping("suggestion")
-    public Flux<Suggestion> createSuggestion(@RequestBody SuggestionMetadata suggestionMetadata)
+
+    @PostMapping("/suggestion/{city}/{state}")
+    public Flux<Suggestion> createSuggestion(@PathVariable String city, @PathVariable String state)
     {
-        return suggestionService.createSuggestions(suggestionMetadata);
+        SuggestionMetadata metadata = new SuggestionMetadata();
+        return Flux.empty();
+//        metadata.getProperties().map(suggestionProperties -> {
+//            suggestionProperties.getUriReplacements().put("city", city);
+//            suggestionProperties.getUriReplacements().put("state", state);
+//            return suggestionProperties
+//        })
+//        return suggestionService.createSuggestions(suggestionMetadata);
     }
 
 }

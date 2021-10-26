@@ -9,11 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.GroupedFlux;
 
-import java.util.function.Function;
-
-@NoArgsConstructor
 @Data
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
 
@@ -21,6 +17,9 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
     U repo;
     RequestBuilder requestBuilder;
     Class<T> suggestionDataClzz;
+    LocationService<V> locationService;
+
+    public DataApiService() {}
 
     public DataApiService(U repo, Class<T> suggestionDataClzz)
     {
@@ -30,17 +29,22 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 
-    public Flux<T> getData(SuggestionMetadata suggestionMetadata)
+    public Flux<V> getData(SuggestionMetadata suggestionMetadata)
     {
-        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
-                .flatMap(this::getData);
+//        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
+//                .flatMap(this::getData)
+//                .map(s -> (V) s);
+//        suggestionMetadata.getProperties()
+//                .map(suggestionProperties -> {
+//                    suggestionProperties.getUriReplacements().get("city");
+//                    suggestionProperties.getUriReplacements().get("city");
+//
+//                })
+                return Flux.empty();
+//        return repo.findByLocationIsWithin()
     }
 
-    //Todo: save data in repos, and also get data from repos in addition to the other services
-
-
-
-    protected Flux<T> getData(UriAndRequest uriAndRequest)
+    protected Flux<? extends SuggestionData> getData(UriAndRequest uriAndRequest)
     {
         return builder.baseUrl(uriAndRequest.url().toString())
                 .build()
@@ -49,4 +53,99 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
                 .bodyToFlux(this.suggestionDataClzz);
     }
 
+    public WebClient.Builder getBuilder()
+    {
+        return builder;
+    }
+
+    public void setBuilder(WebClient.Builder builder)
+    {
+        this.builder = builder;
+    }
+
+    public U getRepo()
+    {
+        return repo;
+    }
+
+    public void setRepo(U repo)
+    {
+        this.repo = repo;
+    }
+
+    public RequestBuilder getRequestBuilder()
+    {
+        return requestBuilder;
+    }
+
+    public void setRequestBuilder(RequestBuilder requestBuilder)
+    {
+        this.requestBuilder = requestBuilder;
+    }
+
+    public Class<T> getSuggestionDataClzz()
+    {
+        return suggestionDataClzz;
+    }
+
+    public void setSuggestionDataClzz(Class<T> suggestionDataClzz)
+    {
+        this.suggestionDataClzz = suggestionDataClzz;
+    }
+
+    public LocationService<V> getLocationService()
+    {
+        return locationService;
+    }
+
+    public void setLocationService(LocationService<V> locationService)
+    {
+        this.locationService = locationService;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataApiService<?, ?, ?> that = (DataApiService<?, ?, ?>) o;
+
+        if (builder != null
+                ? !builder.equals(that.builder)
+                : that.builder != null) return false;
+        if (repo != null
+                ? !repo.equals(that.repo)
+                : that.repo != null) return false;
+        if (requestBuilder != null
+                ? !requestBuilder.equals(that.requestBuilder)
+                : that.requestBuilder != null) return false;
+        if (suggestionDataClzz != null
+                ? !suggestionDataClzz.equals(that.suggestionDataClzz)
+                : that.suggestionDataClzz != null) return false;
+        return locationService != null
+                ? locationService.equals(that.locationService)
+                : that.locationService == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = builder != null
+                ? builder.hashCode()
+                : 0;
+        result = 31 * result + (repo != null
+                ? repo.hashCode()
+                : 0);
+        result = 31 * result + (requestBuilder != null
+                ? requestBuilder.hashCode()
+                : 0);
+        result = 31 * result + (suggestionDataClzz != null
+                ? suggestionDataClzz.hashCode()
+                : 0);
+        result = 31 * result + (locationService != null
+                ? locationService.hashCode()
+                : 0);
+        return result;
+    }
 }
