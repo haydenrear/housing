@@ -18,14 +18,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @SpringBootTest
 class HousingApplicationTests {
@@ -55,50 +56,54 @@ class HousingApplicationTests {
     @Test
     public void fillDatabaseWithData()
     {
-        dateLocations().stream()
-                .map(dateLocation -> {
-                    return Stream.of();
+        dateLocations().flatMap(dateLocation -> {
+                    var irr = internalReturnRateData(dateLocation.getT1(), dateLocation.getT2());
+                    var pop = populationDensity(dateLocation.getT1(), dateLocation.getT2());
+                    return Flux.concat(irr, pop);
+                })
+                .subscribe(val -> {
+                    System.out.println(val);
                 });
     }
 
-    Mono<InternalReturnRateData> internalReturnRateData(SuggestionData.DateLocation dateLocation)
+    Mono<InternalReturnRateData> internalReturnRateData(SuggestionData.DateLocation dateLocation, Tuple2<GeoJsonPolygon, GeoJsonPoint> t2)
     {
         var irr = new InternalReturnRateData(Math.random() * 10000000 * (Math.random()));
         irr.setDateLocation(dateLocation);
         return this.locationService.getDataFromGoogle(dateLocation.getLocation())
                 .map(toParse -> {
-                    var objects = this.locationService.parseData(toParse, 0);
-                    irr.setZipPoly(objects.get().getT1());
-                    irr.setLocation(objects.get().getT2());
+                    irr.setZipPoly(t2.getT1());
+                    irr.setLocation(t2.getT2());
                     irr.setData();
                     return irr;
                 });
     }
 
-    Mono<PopulationDensity> populationDensity(SuggestionData.DateLocation dateLocation)
+    Mono<PopulationDensity> populationDensity(SuggestionData.DateLocation dateLocation,
+                                              Tuple2<GeoJsonPolygon, GeoJsonPoint> t2)
     {
         var pop = new PopulationDensity(Math.random() * 100);
         pop.setDateLocation(dateLocation);
         return this.locationService.getDataFromGoogle(dateLocation.getLocation())
                 .map(toParse -> {
-                    var objects = this.locationService.parseData(toParse, 0);
-                    pop.setZipPoly(objects.get().getT1());
-                    pop.setLocation(objects.get().getT2());
+                    pop.setZipPoly(t2.getT1());
+                    pop.setLocation(t2.getT2());
                     pop.setData();
                     return pop;
                 });
     }
 
-    List<SuggestionData.DateLocation> dateLocations()
+    Flux<Tuple2<SuggestionData.DateLocation, Tuple2<GeoJsonPolygon, GeoJsonPoint>>> dateLocations()
     {
         List<String> zipcodes = zipcodes(25);
 //        List<Date> dates = yearsByMonth(35);
         List<Date> dates = yearsByMonth(30);
-        return zipcodes.stream().flatMap(zip -> {
-            return dates.stream().flatMap(date -> {
-                return Stream.of(new SuggestionData.DateLocation(date, zip));
-            });
-        }).collect(Collectors.toList());
+        return Flux.fromIterable(zipcodes).flatMap(zip -> this.locationService.getDataFromGoogle(zip)
+                .map(toParse -> this.locationService.parseData(toParse, 0))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .flatMapMany(tuple -> Flux.fromIterable(dates).map(date -> Tuples.of(new SuggestionData.DateLocation(date, zip), tuple)))
+        );
 
     }
 

@@ -82,6 +82,8 @@ public class LocationService<Z extends SuggestionData> {
             JSONArray array = (JSONArray) parse.get("results");
             if(parse.get("status").equals("ZERO_RESULTS"))
                 return Optional.empty();
+            if(array == null || array.size() == 0)
+                return Optional.empty();
             JSONObject innerObj = (JSONObject) jsonParser.parse(array.get(latLongIsTwoAddressIsZero).toString());
             JSONObject geometry = (JSONObject) jsonParser.parse(innerObj.get("geometry").toString());
             Object boundsFound = geometry.get("bounds");
