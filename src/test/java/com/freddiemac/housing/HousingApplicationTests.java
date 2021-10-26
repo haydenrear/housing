@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.util.*;
@@ -37,7 +38,6 @@ class HousingApplicationTests {
     WebClient.Builder builder;
     @Autowired
     ApplicationContext applicationContext;
-    private LocationService<TargetSuggestionData> locationService;
 
     LocationService<TargetSuggestionData> locationService;
 
@@ -61,28 +61,32 @@ class HousingApplicationTests {
                 });
     }
 
-    InternalReturnRateData internalReturnRateData(SuggestionData.DateLocation dateLocation)
+    Mono<InternalReturnRateData> internalReturnRateData(SuggestionData.DateLocation dateLocation)
     {
         var irr = new InternalReturnRateData(Math.random() * 10000000 * (Math.random()));
         irr.setDateLocation(dateLocation);
-        Optional<Tuple2<GeoJsonPolygon, GeoJsonPoint>> objects = this.locationService.parseData(
-                dateLocation.getLocation(), 0);
-        irr.setZipPoly(objects.get().getT1());
-        irr.setLocation(objects.get().getT2());
-        irr.setData();
-        return irr;
+        return this.locationService.getDataFromGoogle(dateLocation.getLocation())
+                .map(toParse -> {
+                    var objects = this.locationService.parseData(toParse, 0);
+                    irr.setZipPoly(objects.get().getT1());
+                    irr.setLocation(objects.get().getT2());
+                    irr.setData();
+                    return irr;
+                });
     }
 
-    PopulationDensity populationDensity(SuggestionData.DateLocation dateLocation)
+    Mono<PopulationDensity> populationDensity(SuggestionData.DateLocation dateLocation)
     {
         var pop = new PopulationDensity(Math.random() * 100);
         pop.setDateLocation(dateLocation);
-        pop.setData();
-        Optional<Tuple2<GeoJsonPolygon, GeoJsonPoint>> objects = this.locationService.parseData(
-                dateLocation.getLocation(), 0);
-        pop.setZipPoly(objects.get().getT1());
-        pop.setLocation(objects.get().getT2());
-        return pop;
+        return this.locationService.getDataFromGoogle(dateLocation.getLocation())
+                .map(toParse -> {
+                    var objects = this.locationService.parseData(toParse, 0);
+                    pop.setZipPoly(objects.get().getT1());
+                    pop.setLocation(objects.get().getT2());
+                    pop.setData();
+                    return pop;
+                });
     }
 
     List<SuggestionData.DateLocation> dateLocations()
