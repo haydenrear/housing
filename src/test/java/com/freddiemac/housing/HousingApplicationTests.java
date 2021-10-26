@@ -1,5 +1,6 @@
 package com.freddiemac.housing;
 
+import com.freddiemac.housing.model.TargetSuggestionData;
 import com.freddiemac.housing.repo.CovariateSuggestionRepo;
 import com.freddiemac.housing.repo.TargetSuggestionRepo;
 import com.freddiemac.housing.service.LocationService;
@@ -9,11 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.function.Tuple2;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -42,11 +47,18 @@ class HousingApplicationTests {
     public void testZips()
     {
         System.out.println(zipcodes(10));
-        var locationService = applicationContext.getBean(LocationService.class, builder, targetSuggestionRepo);
-        locationService.getDataFromGoogle("20904")
-                .subscribe(str -> {
-                    System.out.println(str);
-                });
+        LocationService<TargetSuggestionData> locationService = applicationContext.getBean(LocationService.class, builder, targetSuggestionRepo);
+        zipcodes(10).forEach(zip -> {
+                            locationService.getDataFromGoogle(zip)
+                                    .subscribe(str -> {
+                                        Optional<Tuple2<GeoJsonPolygon, GeoJsonPoint>> objects = locationService.parseData(str, 0);
+                                        if(objects.isPresent()) {
+                                            var objectsFound = objects.get();
+                                            System.out.println(objectsFound.getT1());
+                                            System.out.println(objectsFound.getT2());
+                                        }
+                                    });
+                        });
     }
 
     public List<String> zipcodes(int number)

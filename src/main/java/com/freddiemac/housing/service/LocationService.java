@@ -22,6 +22,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.util.Optional;
+
 @Service
 @Scope("prototype")
 @NoArgsConstructor
@@ -47,14 +49,16 @@ public class LocationService<Z extends SuggestionData> {
 
     public Mono<Tuple2<GeoJsonPolygon,GeoJsonPoint>> setPointZip(String zip){
         return getDataFromGoogle(zip)
-                .map(response -> parseData(response, 0));
+                .map(response -> parseData(response, 0))
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     public Mono<String> getDataFromGoogle(String byBlank){
         return webClient
                 .build()
                 .get()
-                .uri(GEOCODEAPIURL+byBlank+"&key="+GEOCODEAPIKEY)
+                .uri(GEOCODEAPIURL+byBlank+"&key="+GEOCODEAPIKEY+"&bounds=true")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(String.class);
@@ -71,16 +75,30 @@ public class LocationService<Z extends SuggestionData> {
                 .bodyToMono(String.class);
     }
 
-    public Tuple2<GeoJsonPolygon, GeoJsonPoint> parseData(String dataToParse, int latLongIsTwoAddressIsZero){
+    public Optional<Tuple2<GeoJsonPolygon, GeoJsonPoint>> parseData(String dataToParse, int latLongIsTwoAddressIsZero){
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject parse = (JSONObject) jsonParser.parse(dataToParse);
             JSONArray array = (JSONArray) parse.get("results");
+            if(parse.get("status").equals("ZERO_RESULTS"))
+                return Optional.empty();
             JSONObject innerObj = (JSONObject) jsonParser.parse(array.get(latLongIsTwoAddressIsZero).toString());
             JSONObject geometry = (JSONObject) jsonParser.parse(innerObj.get("geometry").toString());
-            JSONObject bounds = (JSONObject) jsonParser.parse(geometry.get("bounds").toString());
-            JSONObject northeast = (JSONObject) jsonParser.parse(bounds.get("northeast").toString());
-            JSONObject southwest= (JSONObject) jsonParser.parse(bounds.get("southwest").toString());
+            Object boundsFound = geometry.get("bounds");
+            Object viewPortFound = geometry.get("viewport");
+            JSONObject northeast = null;
+            JSONObject southwest = null;
+            if(boundsFound != null) {
+                JSONObject bounds = (JSONObject) jsonParser.parse(boundsFound.toString());
+                northeast = (JSONObject) jsonParser.parse(bounds.get("northeast").toString());
+                southwest = (JSONObject) jsonParser.parse(bounds.get("southwest").toString());
+            }
+            else if  (viewPortFound != null){
+                JSONObject viewport = (JSONObject) jsonParser.parse(viewPortFound.toString());
+                northeast = (JSONObject) jsonParser.parse(viewport.get("northeast").toString());
+                southwest = (JSONObject) jsonParser.parse(viewport.get("southwest").toString());
+            }
+            else return Optional.empty();
             JSONObject location = (JSONObject) jsonParser.parse(geometry.get("location").toString());
             GeoJsonPoint northeastPoint = new GeoJsonPoint((Double) northeast.get("lng"),(Double) northeast.get("lat"));
             GeoJsonPoint southwestPoint = new GeoJsonPoint((Double) southwest.get("lng"), (Double) southwest.get("lat"));
@@ -92,16 +110,18 @@ public class LocationService<Z extends SuggestionData> {
             double ySoutheast = southwestPoint.getY();
             GeoJsonPoint finishLoop = new GeoJsonPoint(southwestPoint.getX(), northeastPoint.getY());
             GeoJsonPoint southeastPoint = new GeoJsonPoint(xSoutheast, ySoutheast);
-            return Tuples.of(new GeoJsonPolygon(northwestPoint, southwestPoint, southeastPoint, northeastPoint, finishLoop), locationPoint);
+            return Optional.of(Tuples.of(new GeoJsonPolygon(northwestPoint, southwestPoint, southeastPoint, northeastPoint, finishLoop), locationPoint));
         } catch (ParseException ie) {
             ie.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     public Flux<Z> findRegionsNearAny(String any) {
         return getDataFromGoogle(any)
                 .map(response -> parseData(response, 0))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(Tuple2::getT1)
                 .flatMapMany(suggestionRepo::findByLocationIsWithin);
     }
@@ -109,6 +129,8 @@ public class LocationService<Z extends SuggestionData> {
     public Flux<Z> findRegionsByLongLat(String longLatitude) {
         return getDataByReverse(longLatitude)
                 .map(response -> parseData(response, 2))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(Tuple2::getT1)
                 .map(this::getCenter)
                 .flatMapMany(suggestionRepo::findByLocationIsNearOrderByLocationDesc);
