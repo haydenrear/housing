@@ -3,11 +3,13 @@ package com.freddiemac.housing.suggestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.freddiemac.housing.config.props.DataApiProperties;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import javax.annotation.sql.DataSourceDefinitions;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,7 +18,11 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class SuggestionMetadata {
+
+    String city;
+    String state;
 
     @JsonIgnore
     DataApiProperties dataApiProperties;

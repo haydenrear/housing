@@ -31,6 +31,15 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public Flux<V> getData(SuggestionMetadata suggestionMetadata)
     {
+         return locationService.getDataFromGoogle(suggestionMetadata.getCity())
+                 .map(str -> {
+                     return locationService.parseData(str, 0);
+                 }).flatMapMany(geoJson -> {
+                     if(geoJson.isPresent()){
+                         return this.repo.findByLocationIsWithin(geoJson.get().getT1());
+                     }
+                     return Flux.empty();
+                 });
 //        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
 //                .flatMap(this::getData)
 //                .map(s -> (V) s);
@@ -38,9 +47,7 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 //                .map(suggestionProperties -> {
 //                    suggestionProperties.getUriReplacements().get("city");
 //                    suggestionProperties.getUriReplacements().get("city");
-//
 //                })
-                return Flux.empty();
 //        return repo.findByLocationIsWithin()
     }
 
