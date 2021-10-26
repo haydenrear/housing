@@ -4,6 +4,10 @@ import com.freddiemac.housing.model.*;
 import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,9 +18,11 @@ import java.util.stream.Collectors;
 @Component
 public class InternalReturnSuggestionFactory extends SuggestionFactory<CovariateTargetPriceDiff> {
 
+    private ApplicationContext applicationContext;
+
     public InternalReturnSuggestionFactory(
-            List<TargetSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> targetSuggestionDataServices,
-            List<CovariateSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> covariateSuggestionDataServices)
+            @Qualifier("target") List<TargetSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> targetSuggestionDataServices,
+            @Qualifier("covariate") List<CovariateSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> covariateSuggestionDataServices)
     {
         super(targetSuggestionDataServices, covariateSuggestionDataServices);
     }
@@ -90,13 +96,15 @@ public class InternalReturnSuggestionFactory extends SuggestionFactory<Covariate
 
             }).flatMapMany(val -> {
                 return groupedTargets.flatMapMany(map -> {
+                    if(map == null || map.size() == 0)
+                        return Flux.empty();
                     var last = Collections.max(map.keySet(), Comparator.comparing(SuggestionData.DateLocation::getDate));
                     return Flux.fromIterable(map.get(last)).flatMap(toCalculateFor -> {
                         var data = toCalculateFor.getData();
                         var price = data.length > 0 ? data[0] : 0;
                         price += price * val.get(last);
                         toCalculateFor.setProjectedPrice(price);
-                        return Flux.just(new Suggestion(toCalculateFor,"Internal Return Rate"));
+                        return Flux.just(applicationContext.getBean(Suggestion.class, toCalculateFor, "Internal Return Rate"));
                     });
                 });
             });
@@ -149,5 +157,10 @@ public class InternalReturnSuggestionFactory extends SuggestionFactory<Covariate
     }
 
 
-
+    @Override
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
+    {
+        this.applicationContext = applicationContext;
+    }
 }

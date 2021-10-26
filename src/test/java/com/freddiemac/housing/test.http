@@ -1,0 +1,2 @@
+GET http://localhost:8080/suggestion/Graham/USA
+Accept: application/json

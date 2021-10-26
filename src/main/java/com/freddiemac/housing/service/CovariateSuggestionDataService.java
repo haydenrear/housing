@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class CovariateSuggestionDataService<T extends CovariateSuggestionData, U extends SuggestionRepo<CovariateSuggestionData>> extends DataApiService<T,U,CovariateSuggestionData> {
+
     public CovariateSuggestionDataService(U covariateSuggestonRepo, Class<T> populationDensityClass)
     {
         this.repo = covariateSuggestonRepo;

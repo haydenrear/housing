@@ -7,6 +7,7 @@ import com.freddiemac.housing.service.request.UriAndRequest;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
@@ -28,6 +29,14 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
         this.repo = repo;
         this.suggestionDataClzz = suggestionDataClzz;
     }
+
+    @Autowired
+    public void setLocationService(LocationService<V> locationService)
+    {
+        this.locationService = locationService;
+    }
+
+
 
     public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 

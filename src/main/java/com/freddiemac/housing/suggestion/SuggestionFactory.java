@@ -7,13 +7,14 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
 import org.reactivestreams.Publisher;
+import org.springframework.context.ApplicationContextAware;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class SuggestionFactory<T extends CovariateTarget> {
+public abstract class SuggestionFactory<T extends CovariateTarget> implements ApplicationContextAware {
 
     // injected from the component scan
     protected List<TargetSuggestionDataService<? extends SuggestionData, ? extends SuggestionRepo<? extends SuggestionData>>> targetSuggestionDataServices;

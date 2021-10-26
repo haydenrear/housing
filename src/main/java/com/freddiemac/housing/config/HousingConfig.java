@@ -6,6 +6,7 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.repo.TargetSuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.DataApiService;
+import com.freddiemac.housing.service.LocationService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class HousingConfig implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    @Bean
+    @Bean("covariate")
     public List<CovariateSuggestionDataService<? extends CovariateSuggestionData, CovariateSuggestionRepo>> covariateDataServices(
             CovariateSuggestionRepo covariateSuggestonRepo
     )
@@ -32,7 +34,7 @@ public class HousingConfig implements ApplicationContextAware {
         );
     }
 
-    @Bean
+    @Bean("target")
     public List<TargetSuggestionDataService<? extends TargetSuggestionData, TargetSuggestionRepo>> targetSuggestionDataServices(
             TargetSuggestionRepo targetSuggestionRepo
     )

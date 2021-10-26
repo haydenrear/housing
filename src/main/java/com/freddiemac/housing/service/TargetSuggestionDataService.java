@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class TargetSuggestionDataService<T extends TargetSuggestionData, U extends SuggestionRepo<TargetSuggestionData>> extends DataApiService<T, U, TargetSuggestionData> {
+
     public TargetSuggestionDataService(U repo, Class<T> suggestionDataClzz)
     {
         super(repo, suggestionDataClzz);
