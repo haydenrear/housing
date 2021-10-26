@@ -22,4 +22,7 @@ suggestion:
   suggestionRequests:
     population_density_com: com.freddiemac.housing.service.request.PopulationDensityRequest
 
-mongo.connection.string:  mongodb+srv://housing:housingpassword@alpaca.olrez.mongodb.net/alpaca?retryWrites=true&w=majority
+mongo.connection.string:  mongodb+srv://housing:housingpassword@hackathon.udmsy.mongodb.net/housing?retryWrites=true&w=majority
+google.maps.geocode.api.key: AIzaSyD6-iEqSntM5iCrI5Ucoj9XOTeqZ9qj8pE
+google.maps.geocode.api.url: https://maps.googleapis.com/maps/api/geocode/json?address=
+google.maps.geocode.api.reverse.url: https://maps.googleapis.com/maps/api/geocode/json?latlng=
