@@ -16,6 +16,6 @@ public class SuggestionTestData extends SuggestionData{
     @Override
     public void setData()
     {
-        this.data = new Float[]{1f,2f};
+        this.data = new Double[]{1d,2d};
     }
 }

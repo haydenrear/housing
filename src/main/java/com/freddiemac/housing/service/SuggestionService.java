@@ -1,10 +1,7 @@
 package com.freddiemac.housing.service;
 
 import com.freddiemac.housing.model.SuggestionData;
-import com.freddiemac.housing.suggestion.Suggestion;
-import com.freddiemac.housing.suggestion.SuggestionAggregator;
-import com.freddiemac.housing.suggestion.SuggestionFactory;
-import com.freddiemac.housing.suggestion.SuggestionMetadata;
+import com.freddiemac.housing.suggestion.*;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -17,10 +14,10 @@ import java.util.stream.Collectors;
 public class SuggestionService {
 
     SuggestionAggregator suggestionAggregator;
-    List<SuggestionFactory> suggestionFactories;
+    List<SuggestionFactory<? extends CovariateTarget>> suggestionFactories;
 
     public SuggestionService(SuggestionAggregator suggestionAggregator,
-                             List<SuggestionFactory> suggestionFactories)
+                             List<SuggestionFactory<? extends CovariateTarget>> suggestionFactories)
     {
         this.suggestionAggregator = suggestionAggregator;
         this.suggestionFactories = suggestionFactories;
@@ -36,7 +33,7 @@ public class SuggestionService {
 
     public Flux<Suggestion> aggregateSuggestions(Flux<Suggestion> suggestions)
     {
-        return null;
+        return suggestionAggregator.suggestions(suggestions);
     }
 
 }

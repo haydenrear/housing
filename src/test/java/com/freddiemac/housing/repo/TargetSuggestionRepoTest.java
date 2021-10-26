@@ -46,7 +46,7 @@ public class TargetSuggestionRepoTest {
     private InternalReturnRateData getInternalReturnRateData()
     {
         InternalReturnRateData data = new InternalReturnRateData();
-        data.setData(new Float[]{1f,2f,3f});
+        data.setData(new Double[]{1d,2d,3d});
         data.setDate(Date.from(Instant.now()));
         data.setLocation(new GeoJsonPoint(1d, 2d));
         data.setZipPoly(new GeoJsonPolygon(List.of(new GeoJsonPoint(1d, -1d), new GeoJsonPoint(-1d, 1d), new GeoJsonPoint(1d, 1d), new GeoJsonPoint(-1d, -1d))));

@@ -12,4 +12,12 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Data
 public class PopulationDensity extends CovariateSuggestionData {
+
+    double populationDensity;
+
+    @Override
+    public void setData()
+    {
+        this.data = new Double[]{populationDensity};
+    }
 }

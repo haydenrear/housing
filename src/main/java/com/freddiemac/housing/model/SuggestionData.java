@@ -10,11 +10,15 @@ import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.geo.GeoJsonPolygon;
 
 import javax.annotation.PostConstruct;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @Getter
-public abstract class SuggestionData implements Comparable<SuggestionData> {
+public abstract class SuggestionData {
 
     @BsonId
     protected String id;
@@ -24,7 +28,7 @@ public abstract class SuggestionData implements Comparable<SuggestionData> {
     protected GeoJsonPolygon zipPoly;
     protected GeoJsonPoint location;
 
-    protected Float[] data;
+    protected Double[] data;
 
     @JsonIgnore
     protected DateLocation dateLocation;
@@ -50,8 +54,38 @@ public abstract class SuggestionData implements Comparable<SuggestionData> {
 
     @Data
     @AllArgsConstructor
-    public class DateLocation {
+    public static class DateLocation implements Comparable<Date> {
         Date date;
         String location;
+
+        @Override
+        public int compareTo(Date o)
+        {
+            return o.compareTo(date);
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DateLocation that = (DateLocation) o;
+
+            if (!Objects.equals(date, that.date)) return false;
+            return Objects.equals(location, that.location);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = date != null
+                    ? date.hashCode()
+                    : 0;
+            result = 31 * result + (location != null
+                    ? location.hashCode()
+                    : 0);
+            return result;
+        }
     }
 }
