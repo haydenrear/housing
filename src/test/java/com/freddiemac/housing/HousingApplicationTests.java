@@ -37,7 +37,6 @@ class HousingApplicationTests {
     WebClient.Builder builder;
     @Autowired
     ApplicationContext applicationContext;
-    private LocationService<TargetSuggestionData> locationService;
 
     LocationService<TargetSuggestionData> locationService;
 
