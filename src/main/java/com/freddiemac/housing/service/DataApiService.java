@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.util.Objects;
+
 @Data
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
 
@@ -31,10 +33,9 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public Flux<V> getData(SuggestionMetadata suggestionMetadata)
     {
-         return locationService.getDataFromGoogle(suggestionMetadata.getCity())
-                 .map(str -> {
-                     return locationService.parseData(str, 0);
-                 }).flatMapMany(geoJson -> {
+         return locationService.getDataFromGoogle(suggestionMetadata.getCity() + " " +suggestionMetadata.getState())
+                 .map(str -> locationService.parseData(str, 0))
+                 .flatMapMany(geoJson -> {
                      if(geoJson.isPresent()){
                          return this.repo.findByLocationIsWithin(geoJson.get().getT1());
                      }
@@ -60,16 +61,6 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
                 .bodyToFlux(this.suggestionDataClzz);
     }
 
-    public WebClient.Builder getBuilder()
-    {
-        return builder;
-    }
-
-    public void setBuilder(WebClient.Builder builder)
-    {
-        this.builder = builder;
-    }
-
     public U getRepo()
     {
         return repo;
@@ -80,34 +71,9 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
         this.repo = repo;
     }
 
-    public RequestBuilder getRequestBuilder()
-    {
-        return requestBuilder;
-    }
-
-    public void setRequestBuilder(RequestBuilder requestBuilder)
-    {
-        this.requestBuilder = requestBuilder;
-    }
-
     public Class<T> getSuggestionDataClzz()
     {
         return suggestionDataClzz;
-    }
-
-    public void setSuggestionDataClzz(Class<T> suggestionDataClzz)
-    {
-        this.suggestionDataClzz = suggestionDataClzz;
-    }
-
-    public LocationService<V> getLocationService()
-    {
-        return locationService;
-    }
-
-    public void setLocationService(LocationService<V> locationService)
-    {
-        this.locationService = locationService;
     }
 
     @Override
@@ -118,21 +84,11 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
         DataApiService<?, ?, ?> that = (DataApiService<?, ?, ?>) o;
 
-        if (builder != null
-                ? !builder.equals(that.builder)
-                : that.builder != null) return false;
-        if (repo != null
-                ? !repo.equals(that.repo)
-                : that.repo != null) return false;
-        if (requestBuilder != null
-                ? !requestBuilder.equals(that.requestBuilder)
-                : that.requestBuilder != null) return false;
-        if (suggestionDataClzz != null
-                ? !suggestionDataClzz.equals(that.suggestionDataClzz)
-                : that.suggestionDataClzz != null) return false;
-        return locationService != null
-                ? locationService.equals(that.locationService)
-                : that.locationService == null;
+        if (!Objects.equals(builder, that.builder)) return false;
+        if (!Objects.equals(repo, that.repo)) return false;
+        if (!Objects.equals(requestBuilder, that.requestBuilder)) return false;
+        if (!Objects.equals(suggestionDataClzz, that.suggestionDataClzz)) return false;
+        return Objects.equals(locationService, that.locationService);
     }
 
     @Override

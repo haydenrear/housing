@@ -28,13 +28,9 @@ public class HousingController {
     public Flux<Suggestion> createSuggestion(@PathVariable String city, @PathVariable String state)
     {
         SuggestionMetadata metadata = new SuggestionMetadata();
-        return Flux.empty();
-//        metadata.getProperties().map(suggestionProperties -> {
-//            suggestionProperties.getUriReplacements().put("city", city);
-//            suggestionProperties.getUriReplacements().put("state", state);
-//            return suggestionProperties
-//        })
-//        return suggestionService.createSuggestions(suggestionMetadata);
+        metadata.setCity(city);
+        metadata.setState(state);
+        return suggestionService.createSuggestions(metadata);
     }
 
 }

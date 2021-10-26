@@ -6,7 +6,6 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.repo.TargetSuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.DataApiService;
-import com.freddiemac.housing.service.LocationService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
