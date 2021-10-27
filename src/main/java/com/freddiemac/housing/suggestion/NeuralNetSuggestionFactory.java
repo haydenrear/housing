@@ -7,18 +7,18 @@ import com.freddiemac.housing.repo.SuggestionRepo;
 import com.freddiemac.housing.service.CovariateSuggestionDataService;
 import com.freddiemac.housing.service.TargetSuggestionDataService;
 import com.freddiemac.housing.service.request.RequestBuilder;
-import org.deeplearning4j.nn.api.OptimizationAlgorithm;
-import org.deeplearning4j.nn.conf.GradientNormalization;
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
-import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.layers.FeedForwardLayer;
-import org.deeplearning4j.nn.conf.layers.LSTM;
-import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
-import org.deeplearning4j.nn.weights.WeightInit;
-import org.nd4j.linalg.activations.Activation;
-import org.nd4j.linalg.api.buffer.DataType;
-import org.nd4j.linalg.learning.config.Nesterovs;
-import org.nd4j.linalg.lossfunctions.LossFunctions;
+//import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+//import org.deeplearning4j.nn.conf.GradientNormalization;
+//import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+//import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+//import org.deeplearning4j.nn.conf.layers.FeedForwardLayer;
+//import org.deeplearning4j.nn.conf.layers.LSTM;
+//import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
+//import org.deeplearning4j.nn.weights.WeightInit;
+//import org.nd4j.linalg.activations.Activation;
+//import org.nd4j.linalg.api.buffer.DataType;
+//import org.nd4j.linalg.learning.config.Nesterovs;
+//import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -108,47 +108,47 @@ public class NeuralNetSuggestionFactory extends SuggestionFactory<CovariateTarge
 
 
 
-    public MultiLayerConfiguration nnConfig(int batchSize, int nIn)
-    {
-        return NNConfig(
-                OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT,
-                WeightInit.XAVIER,
-                new Nesterovs(0.005),
-                GradientNormalization.ClipElementWiseAbsoluteValue, 0.5,
-                List.of(
-                        new LSTM.Builder().activation(Activation.TANH).nIn(2).nOut(batchSize),
-                        new LSTM.Builder().activation(Activation.TANH).nIn(batchSize).nOut(batchSize),
-                        new RnnOutputLayer.Builder(LossFunctions.LossFunction.MSE)
-                                .activation(Activation.SOFTMAX).nIn(batchSize).nOut(1)
-                )
-        );
-    }
+//    public MultiLayerConfiguration nnConfig(int batchSize, int nIn)
+//    {
+//        return NNConfig(
+//                OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT,
+//                WeightInit.XAVIER,
+//                new Nesterovs(0.005),
+//                GradientNormalization.ClipElementWiseAbsoluteValue, 0.5,
+//                List.of(
+//                        new LSTM.Builder().activation(Activation.TANH).nIn(2).nOut(batchSize),
+//                        new LSTM.Builder().activation(Activation.TANH).nIn(batchSize).nOut(batchSize),
+//                        new RnnOutputLayer.Builder(LossFunctions.LossFunction.MSE)
+//                                .activation(Activation.SOFTMAX).nIn(batchSize).nOut(1)
+//                )
+//        );
+//    }
 
-    public MultiLayerConfiguration NNConfig(
-            OptimizationAlgorithm gradientDescent,
-            WeightInit weightInit,
-            Nesterovs updater,
-            GradientNormalization gradientNorm,
-            double gradientNormThreshold,
-            List<FeedForwardLayer.Builder<?>> layers
-    )
-    {
-        var nn = new NeuralNetConfiguration.Builder()
-                .seed(123)    //Random number generator seed for improved repeatability. Optional.
-                .dataType(DataType.DOUBLE)
-                .optimizationAlgo(gradientDescent)
-                .weightInit(weightInit)
-                .updater(updater)
-                .gradientNormalization(gradientNorm)  //Not always required, but helps with this data set
-                .gradientNormalizationThreshold(gradientNormThreshold)
-                .list();
-        int counter = 0;
-        for (var layer : layers){
-            nn.layer(counter, layer.build());
-            ++counter;
-        }
-        return nn.build();
-    }
+//    public MultiLayerConfiguration NNConfig(
+//            OptimizationAlgorithm gradientDescent,
+//            WeightInit weightInit,
+//            Nesterovs updater,
+//            GradientNormalization gradientNorm,
+//            double gradientNormThreshold,
+//            List<FeedForwardLayer.Builder<?>> layers
+//    )
+//    {
+//        var nn = new NeuralNetConfiguration.Builder()
+//                .seed(123)    //Random number generator seed for improved repeatability. Optional.
+//                .dataType(DataType.DOUBLE)
+//                .optimizationAlgo(gradientDescent)
+//                .weightInit(weightInit)
+//                .updater(updater)
+//                .gradientNormalization(gradientNorm)  //Not always required, but helps with this data set
+//                .gradientNormalizationThreshold(gradientNormThreshold)
+//                .list();
+//        int counter = 0;
+//        for (var layer : layers){
+//            nn.layer(counter, layer.build());
+//            ++counter;
+//        }
+//        return nn.build();
+//    }
 
 
     @Override

@@ -42,7 +42,7 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public Flux<V> getData(SuggestionMetadata suggestionMetadata)
     {
-         return locationService.getDataFromGoogle(suggestionMetadata.getCity() + " " +suggestionMetadata.getState())
+         return locationService.getDataFromGoogle(suggestionMetadata.getState())
                  .map(str -> locationService.parseData(str, 0))
                  .flatMapMany(geoJson -> {
                      if(geoJson.isPresent()){
