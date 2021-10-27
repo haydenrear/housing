@@ -8,9 +8,9 @@ import java.util.List;
 @Service
 public class SuggestionAggregator {
 
-    public Flux<Suggestion> suggestions(Flux<Suggestion> suggestions)
+    public Flux<Suggestion> suggestions(List<Suggestion> suggestions)
     {
-        return suggestions.take(10);
+        return Flux.fromIterable(suggestions.subList(0, Math.min(suggestions.size(), 10)));
     }
 
 }

@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
-@NoArgsConstructor
 public class TargetSuggestionDataService<T extends TargetSuggestionData, U extends SuggestionRepo<TargetSuggestionData>> extends DataApiService<T, U, TargetSuggestionData> {
+
     public TargetSuggestionDataService(U repo, Class<T> suggestionDataClzz)
     {
         super(repo, suggestionDataClzz);
     }
+
+    public TargetSuggestionDataService() {}
 
     @Override
     @Autowired

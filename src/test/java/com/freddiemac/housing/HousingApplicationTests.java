@@ -10,6 +10,7 @@ import com.freddiemac.housing.service.LocationService;
 import com.freddiemac.housing.util.DateService;
 import com.github.javafaker.Address;
 import com.github.javafaker.Faker;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,17 +54,26 @@ class HousingApplicationTests {
     {
     }
 
-    @Test
-    public void fillDatabaseWithData()
+//    @Test
+    public void fillDatabaseWithData() throws InterruptedException
     {
         dateLocations().flatMap(dateLocation -> {
-                    var irr = internalReturnRateData(dateLocation.getT1(), dateLocation.getT2());
-                    var pop = populationDensity(dateLocation.getT1(), dateLocation.getT2());
-                    return Flux.concat(irr, pop);
+                    var target = internalReturnRateData(dateLocation.getT1(), dateLocation.getT2())
+                            .flatMap(targetSuggestionRepo::save);
+                    System.out.println(dateLocation.getT1());
+                    var covariate = populationDensity(dateLocation.getT1(), Tuples.of(dateLocation.getT2().getT1(), dateLocation.getT2().getT2()))
+                            .flatMap(covariateSuggestionRepo::save);
+                    return Flux.concat(target,covariate);
                 })
-                .subscribe(val -> {
-                    System.out.println(val);
-                });
+                .subscribe();
+        Thread.sleep(100000);
+    }
+
+    Flux<Tuple2<SuggestionData.DateLocation, Tuple2<GeoJsonPolygon, GeoJsonPoint>>> dateLocationsFrom()
+    {
+        return this.targetSuggestionRepo.findAll()
+                .map(val -> Tuples.of(val.getDateLocation(), Tuples.of(val.getZipPoly(), val.getLocation())))
+                .distinct();
     }
 
     Mono<InternalReturnRateData> internalReturnRateData(SuggestionData.DateLocation dateLocation, Tuple2<GeoJsonPolygon, GeoJsonPoint> t2)
@@ -74,6 +84,8 @@ class HousingApplicationTests {
                 .map(toParse -> {
                     irr.setZipPoly(t2.getT1());
                     irr.setLocation(t2.getT2());
+                    irr.setAddress(address(dateLocation.getLocation()));
+                    irr.setDateLocation(dateLocation);
                     irr.setData();
                     return irr;
                 });
@@ -95,9 +107,9 @@ class HousingApplicationTests {
 
     Flux<Tuple2<SuggestionData.DateLocation, Tuple2<GeoJsonPolygon, GeoJsonPoint>>> dateLocations()
     {
-        List<String> zipcodes = zipcodes(25);
+        List<String> zipcodes = zipcodes(5);
 //        List<Date> dates = yearsByMonth(35);
-        List<Date> dates = yearsByMonth(30);
+        List<Date> dates = yearsByMonth(10);
         return Flux.fromIterable(zipcodes).flatMap(zip -> this.locationService.getDataFromGoogle(zip)
                 .map(toParse -> this.locationService.parseData(toParse, 0))
                 .filter(Optional::isPresent)
@@ -154,6 +166,26 @@ class HousingApplicationTests {
                                         }
                                     });
                         });
+    }
+
+    @Test
+    public void testAddress()
+    {
+        System.out.println(address("20904"));
+    }
+
+    public String address(String zip)
+    {
+        Faker faker = new Faker();
+        Address address = faker.address();
+        String s = address.fullAddress();
+        var items = s.split(",");
+        var last = items[items.length-1];
+        String[] s1 = last.strip().split(" ");
+        var state = s1[0];
+        items = Arrays.copyOf(items, items.length -1);
+        var toReturn = StringUtils.join(items, "")+" "+state;
+        return toReturn + " " +zip;
     }
 
     public List<String> zipcodes(int number)

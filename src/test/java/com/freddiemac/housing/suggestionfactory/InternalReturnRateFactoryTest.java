@@ -32,22 +32,32 @@ public class InternalReturnRateFactoryTest {
     {
         PopulationDensity populationDensity = new PopulationDensity(1d);
         populationDensity.setData();
-        populationDensity.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L)), "first"));
+        populationDensity.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L)), "first"));
         PopulationDensity populationDensity1 = new PopulationDensity(2d);
         populationDensity1.setData();
-        populationDensity1.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(2, ChronoUnit.DAYS)), "second"));
+        populationDensity1.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(2, ChronoUnit.DAYS)),
+                                                "second"));
         PopulationDensity populationDensity2 = new PopulationDensity(3d);
-        populationDensity2.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(3, ChronoUnit.DAYS)), "third"));
+        populationDensity2.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(3, ChronoUnit.DAYS)),
+                                                "third"));
         populationDensity2.setData();
         InternalReturnRateData internalReturnRateData = new InternalReturnRateData(1d);
         internalReturnRateData.setData();
-        internalReturnRateData.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L)), "first"));
+        internalReturnRateData.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L)), "first"));
         InternalReturnRateData internalReturnRateData1 = new InternalReturnRateData(2d);
         internalReturnRateData1.setData();
-        internalReturnRateData1.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(2, ChronoUnit.DAYS)), "second"));
+        internalReturnRateData1.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(2, ChronoUnit.DAYS)),
+                                                "second"));
         InternalReturnRateData internalReturnRateData2 = new InternalReturnRateData(3d);
         internalReturnRateData2.setData();
-        internalReturnRateData2.setDateLocation(new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(3, ChronoUnit.DAYS)), "third"));
+        internalReturnRateData2.setDateLocation(
+                new SuggestionData.DateLocation(Date.from(Instant.ofEpochMilli(1234952L).minus(3, ChronoUnit.DAYS)),
+                                                "third"));
 
         var covar = Flux.just(populationDensity, populationDensity1, populationDensity2);
         var target = Flux.just(internalReturnRateData, internalReturnRateData1, internalReturnRateData2);

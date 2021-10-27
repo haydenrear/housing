@@ -7,13 +7,12 @@ import com.freddiemac.housing.service.request.UriAndRequest;
 import com.freddiemac.housing.suggestion.SuggestionMetadata;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.GroupedFlux;
 
-import java.util.function.Function;
+import java.util.Objects;
 
-@NoArgsConstructor
 @Data
 public abstract class DataApiService <T extends SuggestionData, U extends SuggestionRepo<V>, V extends SuggestionData> {
 
@@ -21,6 +20,9 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
     U repo;
     RequestBuilder requestBuilder;
     Class<T> suggestionDataClzz;
+    LocationService<V> locationService;
+
+    public DataApiService() {}
 
     public DataApiService(U repo, Class<T> suggestionDataClzz)
     {
@@ -28,19 +30,38 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
         this.suggestionDataClzz = suggestionDataClzz;
     }
 
-    public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
-
-    public Flux<T> getData(SuggestionMetadata suggestionMetadata)
+    @Autowired
+    public void setLocationService(LocationService<V> locationService)
     {
-        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
-                .flatMap(this::getData);
+        this.locationService = locationService;
     }
 
-    //Todo: save data in repos, and also get data from repos in addition to the other services
 
 
+    public abstract void setBuilder(WebClient.Builder builder, RequestBuilder requestBuilder);
 
-    protected Flux<T> getData(UriAndRequest uriAndRequest)
+    public Flux<V> getData(SuggestionMetadata suggestionMetadata)
+    {
+         return locationService.getDataFromGoogle(suggestionMetadata.getCity() + " " +suggestionMetadata.getState())
+                 .map(str -> locationService.parseData(str, 0))
+                 .flatMapMany(geoJson -> {
+                     if(geoJson.isPresent()){
+                         return this.repo.findByLocationIsWithin(geoJson.get().getT1());
+                     }
+                     return Flux.empty();
+                 });
+//        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
+//                .flatMap(this::getData)
+//                .map(s -> (V) s);
+//        suggestionMetadata.getProperties()
+//                .map(suggestionProperties -> {
+//                    suggestionProperties.getUriReplacements().get("city");
+//                    suggestionProperties.getUriReplacements().get("city");
+//                })
+//        return repo.findByLocationIsWithin()
+    }
+
+    protected Flux<? extends SuggestionData> getData(UriAndRequest uriAndRequest)
     {
         return builder.baseUrl(uriAndRequest.url().toString())
                 .build()
@@ -49,4 +70,54 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
                 .bodyToFlux(this.suggestionDataClzz);
     }
 
+    public U getRepo()
+    {
+        return repo;
+    }
+
+    public void setRepo(U repo)
+    {
+        this.repo = repo;
+    }
+
+    public Class<T> getSuggestionDataClzz()
+    {
+        return suggestionDataClzz;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataApiService<?, ?, ?> that = (DataApiService<?, ?, ?>) o;
+
+        if (!Objects.equals(builder, that.builder)) return false;
+        if (!Objects.equals(repo, that.repo)) return false;
+        if (!Objects.equals(requestBuilder, that.requestBuilder)) return false;
+        if (!Objects.equals(suggestionDataClzz, that.suggestionDataClzz)) return false;
+        return Objects.equals(locationService, that.locationService);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = builder != null
+                ? builder.hashCode()
+                : 0;
+        result = 31 * result + (repo != null
+                ? repo.hashCode()
+                : 0);
+        result = 31 * result + (requestBuilder != null
+                ? requestBuilder.hashCode()
+                : 0);
+        result = 31 * result + (suggestionDataClzz != null
+                ? suggestionDataClzz.hashCode()
+                : 0);
+        result = 31 * result + (locationService != null
+                ? locationService.hashCode()
+                : 0);
+        return result;
+    }
 }

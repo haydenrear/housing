@@ -8,13 +8,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @EqualsAndHashCode(callSuper = true)
-@Document(collation = "TargetSuggestionData")
+@Document(collection = "targetSuggestionData")
 @Scope("prototype")
 @AllArgsConstructor
 @Data
+@NoArgsConstructor
 public class TargetSuggestionData extends SuggestionData {
 
     //Todo:
+    String address;
 
     @Override
     public void setData()

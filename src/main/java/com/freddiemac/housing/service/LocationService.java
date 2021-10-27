@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.geo.Point;
@@ -41,6 +42,13 @@ public class LocationService<Z extends SuggestionData> {
 
     private WebClient.Builder webClient;
     private SuggestionRepo<Z> suggestionRepo;
+
+    @Autowired
+    public void setWebClient(WebClient.Builder webClient)
+    {
+        this.webClient = webClient;
+    }
+
 
     public LocationService(WebClient.Builder client, SuggestionRepo<Z> suggestionRepo) {
         this.webClient = client;
