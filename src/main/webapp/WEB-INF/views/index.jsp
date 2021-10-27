@@ -57,6 +57,7 @@
 </header>
 
 <!-- Carousel -->
+<c:if test="${price == null}">
 <div class="container">
     <div class="row d-flex justify-content-center">
         <div class="col-md-auto">
@@ -95,6 +96,7 @@
         </div>
     </div>
 </div>
+</c:if>
 <br>
 <div class="container">
     <div class="row d-flex justify-content-center">
@@ -116,7 +118,7 @@
                         <option>Commercial</option>
                         <option>Residential</option>
                     </select>
-                    <div class="d-flex justify-content-center"><input type="submit" class="btn btn-primary" value="submit">Where to invest</div>
+                    <div class="d-flex justify-content-center"><input type="submit" class="btn btn-primary" value="submit"></div>
                 </div>
             </form>
         </div>
@@ -135,6 +137,7 @@
 <br>
 <br>
 <br>
+<c:if test="${price == null}">
 <div class="container">
     <div class="row">
         <div class="col-xs-12">
@@ -154,6 +157,7 @@
         </div>
     </div>
 </div>
+</c:if>
 </br>
 </br>
 <br>
