@@ -1,0 +1,92 @@
+
+*{
+    margin:0;
+    padding:0;
+  }
+  #map {
+    height: 400px;    
+    width: 100%;
+  }
+  .form-group{
+    padding-left: 7px;
+  }
+   #navigation{
+     margin: 1.8rem;
+   }
+   .img-fluid{
+    max-width:100%;
+   }
+  .main{
+width: 300px;
+height: 350px;
+background-color: #e8e8e8;
+padding-top: 50px;
+}
+.buttons{
+height: 45px;
+width: 65%;
+background-color: #d3d3d3;
+color: #9a9a9a;
+text-align: center;
+margin: 15px 0 0 15%;
+
+}
+.input{
+height: 45px;
+width: 100%;
+font-size: 18px;
+background-color: white;
+font-weight: bolder;
+border: none;
+text-align: center;
+opacity: 0.5;
+}
+.login{
+height: 45px;
+width: 65%;
+font-size: 18px;
+margin: 15px 0 0 -15px;
+background-color: #56c9e4;
+font-weight: bold;
+border: none;
+
+color: #8ee2ef;
+}
+h2{
+color: #9a9a9a;
+padding-left: 7px;
+}
+.navpan{
+color: #9a9a9a;
+font-weight: bold;
+font-size: 25px;
+
+}
+.h1c{
+color: #9a9a9a;
+}
+.carousel2{
+max-width:100%; 
+height:auto; 
+}
+.tbl{
+color: white;
+} 
+
+div>p{
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #007bff;
+}
+div u{
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #007bff;
+}
+footer {
+    text-align: center;
+    padding: 3px;
+    background-color: #56c9e4;
+    color: white;
+  }
+
