@@ -102,7 +102,7 @@
     <div class="row d-flex justify-content-center">
         <c:if test="${price == null}">
         <div class="col-xs-12">
-            <h2>Please provide state and city for getting result</h2>
+            <h2>Please provide country and city for getting result</h2>
             <form action="suggestion" method="post" modelAtribute="result">
                 <div class="form-group">
                     <label for="state">Country:</label>
