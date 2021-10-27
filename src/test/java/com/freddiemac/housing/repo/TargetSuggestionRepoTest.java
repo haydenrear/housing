@@ -25,7 +25,7 @@ public class TargetSuggestionRepoTest {
     @Autowired
     ApplicationContext ctx;
 
-    @Test
+//    @Test
     public void runner()
     {
         InternalReturnRateData data = getInternalReturnRateData();
