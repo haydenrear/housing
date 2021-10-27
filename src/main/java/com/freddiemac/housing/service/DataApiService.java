@@ -42,7 +42,7 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
 
     public Flux<V> getData(SuggestionMetadata suggestionMetadata)
     {
-         return locationService.getDataFromGoogle(suggestionMetadata.getState())
+         Flux<V> toReturn = locationService.getDataFromGoogle(suggestionMetadata.getState())
                  .map(str -> locationService.parseData(str, 0))
                  .flatMapMany(geoJson -> {
                      if(geoJson.isPresent()){
@@ -50,15 +50,10 @@ public abstract class DataApiService <T extends SuggestionData, U extends Sugges
                      }
                      return Flux.empty();
                  });
-//        return this.requestBuilder.createSuggestionRequest(suggestionMetadata)
-//                .flatMap(this::getData)
-//                .map(s -> (V) s);
-//        suggestionMetadata.getProperties()
-//                .map(suggestionProperties -> {
-//                    suggestionProperties.getUriReplacements().get("city");
-//                    suggestionProperties.getUriReplacements().get("city");
-//                })
-//        return repo.findByLocationIsWithin()
+        var request = this.requestBuilder.createSuggestionRequest(suggestionMetadata)
+                .flatMap(this::getData)
+                .map(s -> (V) s);
+        return Flux.concat(toReturn, request);
     }
 
     protected Flux<? extends SuggestionData> getData(UriAndRequest uriAndRequest)

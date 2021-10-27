@@ -20,7 +20,7 @@ public class RequestBuilder {
 
     public Flux<UriAndRequest> createSuggestionRequest(SuggestionMetadata suggestionMetadata)
     {
-        return suggestionMetadata.getProperties()
+        return suggestionMetadata.getQueryReplacements() != null ? suggestionMetadata.getProperties()
                 .map(apiProp -> getUri(apiProp)
                         .map(uri -> {
                             Class<? extends SuggestionRequest> suggestionRequest = dataApiProperties.getSuggestionRequests().get(apiProp.getSuggestionType());
@@ -28,7 +28,7 @@ public class RequestBuilder {
                             return new UriAndRequest(uri, suggestionRequestCreated.orElse(null), HttpMethod.valueOf(apiProp.getHttpMethod()));
                         })
                         .orElseThrow()
-                );
+                ) : Flux.empty();
     }
 
     private <T extends SuggestionRequest> Optional<T> getSuggestionRequest(Class<T> suggestionRequest,
