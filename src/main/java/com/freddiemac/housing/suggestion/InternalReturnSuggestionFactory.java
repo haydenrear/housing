@@ -103,6 +103,7 @@ public class InternalReturnSuggestionFactory extends SuggestionFactory<Covariate
                         var data = toCalculateFor.getData();
                         var price = data.length > 0 ? data[0] : 0;
                         price += price * val.get(last);
+                        toCalculateFor.setData(new Double[]{val.get(last)});
                         toCalculateFor.setProjectedPrice(price);
                         return Flux.just(applicationContext.getBean(Suggestion.class, toCalculateFor, "Internal Return Rate"));
                     });
